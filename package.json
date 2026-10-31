@@ -1,0 +1,55 @@
+{
+  "name": "@local/dsh-session-artifacts",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Every Session's produced files in one list: which Session wrote which path, newest first, with one-click path copy — so work can be picked up again without reorganising anything.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/accoutmissing/dsh-session-artifacts.git"
+  },
+  "homepage": "https://github.com/accoutmissing/dsh-session-artifacts#readme",
+  "bugs": {
+    "url": "https://github.com/accoutmissing/dsh-session-artifacts/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "session-artifacts",
+    "session-log",
+    "sidebar"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./icon": "./icon.svg",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "icon.svg",
+    "locale/*.json",
+    "README.md",
+    "README.en.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  }
+}
