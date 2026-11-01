@@ -1,6 +1,7 @@
 {
   "name": "@local/dsh-session-artifacts",
   "version": "0.4.0",
+  "engines": { "dsh": ">=0.2.0-rc.1 <0.3.0-0" },
   "private": true,
   "type": "module",
   "description": "Every Session's produced files in one list: which Session wrote which path, newest first, with one-click path copy — so work can be picked up again without reorganising anything.",
