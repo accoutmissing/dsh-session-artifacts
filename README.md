@@ -6,19 +6,7 @@
 
 它不生成文件，也不改动任何东西——只是把已经散落在会话日志里的「谁写了哪个路径」重新变成看得见的一列，让下一次会话能接着上一次的活干，而不是重新盘一遍。
 
-```
-产物                                         140 个会话 · 892 个产物文件   ↻
-┌──────────────────────────────────────────────────────────────┐
-│ 置顶 1                                                        │
-│  📌 PLUGIN-PLAN.md   …\default-workspace\            ⧉   ×   │
-├──────────────────────────────────────────────────────────────┤
-│ ▸ ✨ 功能｜派活台插件后台派活        本会话  65               │
-│   📌 client.js      …\dsh-session-artifacts\         ⧉  📌   │
-│      index.js       …\dsh-session-artifacts\         ⧉  📌   │
-│      package.json   …\dsh-session-artifacts\         ⧉  📌   │
-│      展开全部 +53                       复制全部路径          │
-└──────────────────────────────────────────────────────────────┘
-```
+![右栏「产物」标签页](assets/screenshot-list.png)
 
 ## 为什么需要它
 
@@ -44,7 +32,21 @@
 
 ## 安装
 
-这是一个 DSH bundle（`dsh.bundle.patch` 指向 `cordis.patch.yml`），装法与其它本地 bundle 相同：
+这是一个 DSH bundle：`package.json` 的 `dsh.bundle.patch` 指向 `cordis.patch.yml`，所以插件管理器能把它当成一层 profile 补丁装进去。
+
+**从 GitHub 装。** 在侧栏的「插件」页面里安装，来源填：
+
+```
+github:accoutmissing/dsh-session-artifacts
+```
+
+或者在你自己的 profile 里走 CLI（`desktop` profile 由桌面端托管，CLI 会拒绝 `--profile desktop`，那种情况用上面的界面）：
+
+```sh
+dsh plugin --profile <profile> add github:accoutmissing/dsh-session-artifacts
+```
+
+**从本地目录装（改代码时用这个）**：
 
 ```js
 // 在 DSH 会话里让 Agent 执行
@@ -66,7 +68,7 @@ DSH 的会话日志是**唯一**能回答「这个会话产出过哪些文件」
 | 文件格式 | **多个 zstd 帧首尾相接**。`zstdDecompressSync` 只解第一帧（4.2 MB 的文件只出 290 字节），必须按魔数 `28 b5 2f fd` 切片逐帧解；尾部未写完的帧跳过 |
 | 会话标题 | `session/title` 行自带标题，不必解析首条用户消息 |
 | 产物路径 | 只能来自 `tool/call`：`write` / `edit` 的 `arguments`（JSON 字符串，要二次 `parse`）里有 `file_path` |
-| 实测规模 | 本机 140 个会话 / 892 个产物文件；冷启动全量索引 ~3 s，暖启动 ~0.2 s |
+| 实测规模 | 本机 159 个会话 / 1208 个产物文件（2026-11-03）；冷启动全量索引 ~3 s，暖启动 ~0.2 s |
 
 缓存写在 `~/.dsh/session-artifacts-cache.json`，按 `size + mtime` 增量：没变过的会话不重新解压。首次扫描在后台跑，界面先显示「首次扫描中…」。
 

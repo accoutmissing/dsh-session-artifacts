@@ -5,6 +5,15 @@
 - `ctx.get('sidebarRight')` was read inside an effect at apply time. The right sidebar's fiber waits on the session model, so in a profile where it activates *after* this tab the read returned `undefined` and the cached handle stayed null for the whole window: every double click answered "the sidebar is not ready yet". The handle now arrives through `ctx.inject(['sidebarRight'], …)`, the same way the tab registry is waited for, and `openPreview` falls back to a live `ctx.get` for the gap before that.
 - Reproduced against the shipped cordis 4.0.5: the apply-time read stays `null` after the provider lands, while both the injected read and the live read get the controller.
 
+## 0.4.2 — a tile, screenshots, and the install line a reader needs
+
+- `assets/icon-180.png`: a raster tile for storefronts, drawn from the repo's own glyph on the accent plate the plugin already uses (`#d97757`). `icon.svg` stays as the tab chip.
+- `screenshots.json` declares three screenshots, rendered from the production `client.js` against live host state with the skin's own dark tokens: the pane as it opens, a search, and one Session with every file shown.
+- READMEs lead with that screenshot instead of a hand-drawn ASCII box, which drifted from the real layout every release.
+- Install section now starts with the GitHub source (`github:accoutmissing/dsh-session-artifacts`): the plugin-manager page, and the `dsh plugin --profile <name> add …` form for profiles the CLI manages. The local-directory form stays, labelled as the one to use while editing.
+- Measured size refreshed (159 Sessions / 1208 produced files).
+- `engines.dsh` was `>=0.2.0-rc.1 <0.3.0-0`, which node-semver silently reads as "no prerelease at all": neither comparator sits on the `0.2.1` tuple with a prerelease tag, so the running `0.2.1-rc.5` did **not** satisfy it. Split into an explicit branch (`>=0.2.0-rc.1 <0.2.1-0 || >=0.2.1-rc.1 <0.3.0-0`); checked against `0.2.0`, `0.2.0-rc.1`, `0.2.1-rc.5`, `0.2.1`, `0.2.5` (all true) and `0.3.0-rc.1` (false).
+
 ## 0.4.0 — click to copy, double-click to preview
 
 - **One click copies the path, two clicks preview it.** A double click fires two clicks, so a copy scheduled by the first click is cancelled when the second lands (`CLICK_MS = 240`). Without that delay every double click would have copied first.

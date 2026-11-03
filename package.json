@@ -1,7 +1,7 @@
 {
   "name": "@local/dsh-session-artifacts",
-  "version": "0.4.1",
-  "engines": { "dsh": ">=0.2.0-rc.1 <0.3.0-0" },
+  "version": "0.4.2",
+  "engines": { "dsh": ">=0.2.0-rc.1 <0.2.1-0 || >=0.2.1-rc.1 <0.3.0-0" },
   "private": true,
   "type": "module",
   "description": "Every Session's produced files in one list: which Session wrote which path, newest first, with one-click path copy — so work can be picked up again without reorganising anything.",
@@ -34,6 +34,8 @@
     "client.js",
     "cordis.patch.yml",
     "icon.svg",
+    "assets",
+    "screenshots.json",
     "locale/*.json",
     "README.md",
     "README.en.md",

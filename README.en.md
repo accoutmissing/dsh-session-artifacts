@@ -6,18 +6,7 @@ A right-sidebar tab for the DeepSeek Harness (DSH) Web UI: **one list of every f
 
 It writes nothing and changes nothing on disk. It only turns the record that already sits in the session logs — which Session wrote which path — back into a column you can read, so the next Session can pick up the last one's work instead of re-scanning the tree.
 
-```
-Artifacts                            140 Sessions · 892 produced files   ↻
-┌──────────────────────────────────────────────────────────────┐
-│ Pinned 1                                                      │
-│  📌 PLUGIN-PLAN.md   …\default-workspace\            ⧉   ×   │
-├──────────────────────────────────────────────────────────────┤
-│ ▸ ✨ Feature｜plugin background dispatch   this one  65       │
-│   📌 client.js      …\dsh-session-artifacts\         ⧉  📌   │
-│      index.js       …\dsh-session-artifacts\         ⧉  📌   │
-│   show all +53                       copy all paths           │
-└──────────────────────────────────────────────────────────────┘
-```
+![The Artifacts tab in the right sidebar](assets/screenshot-list.png)
 
 ## Why it exists
 
@@ -43,7 +32,21 @@ This turns that stream into an inventory. It does not "tidy" anything — every 
 
 ## Install
 
-This is a DSH bundle (`dsh.bundle.patch` points at `cordis.patch.yml`), installed like any other local bundle:
+This is a DSH bundle: `package.json` declares `dsh.bundle.patch` pointing at `cordis.patch.yml`, so a plugin manager can install it as one profile patch layer.
+
+**From GitHub.** Install it from the sidebar's Plugins page with the source:
+
+```
+github:accoutmissing/dsh-session-artifacts
+```
+
+or from your own profile on the command line (the `desktop` profile is managed by the Desktop app and the CLI refuses `--profile desktop`, so use the page above there):
+
+```sh
+dsh plugin --profile <profile> add github:accoutmissing/dsh-session-artifacts
+```
+
+**From a local directory** (what you want while editing the code):
 
 ```js
 // run from a DSH Session
@@ -65,7 +68,7 @@ The session log is the **only** answer to "which files did this Session produce"
 | File format | **Concatenated zstd frames.** `zstdDecompressSync` decodes the first frame only (a 4.2 MB file yields 290 bytes), so the buffer is split on the frame magic `28 b5 2f fd` and each slice decoded; a trailing half-written frame is skipped |
 | Session title | The `session/title` row carries it; no need to parse the first user message |
 | Produced paths | Only from `tool/call`: `write` / `edit` carry `file_path` inside `arguments` (a JSON *string*, parsed a second time) |
-| Measured here | 140 Sessions / 892 produced files; ~3 s for a cold full index, ~0.2 s warm |
+| Measured here | 159 Sessions / 1208 produced files (2026-11-03); ~3 s for a cold full index, ~0.2 s warm |
 
 The cache lives in `~/.dsh/session-artifacts-cache.json` and is keyed on `size + mtime`, so unchanged Sessions are never decompressed again. The first scan runs in the background while the pane says "first scan…".
 
