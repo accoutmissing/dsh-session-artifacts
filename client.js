@@ -327,7 +327,12 @@ window.__ModuleLoader__.load({
     // double click cancels the pending copy that its first click scheduled.
     const CLICK_MS = 240
     let pendingCopy = null
+    // The right sidebar service can be provided after this plugin applies — it waits on
+    // the session model, this tab does not — so a handle read once and kept would stay
+    // null for the life of the window and refuse every preview. Keep the injected handle
+    // when it arrives, and probe live for the gap before that.
     let rightbar = null
+    let probeRightbar = () => null
 
     function cancelPendingCopy() {
       if (pendingCopy !== null) {
@@ -350,12 +355,14 @@ window.__ModuleLoader__.load({
      * different fixes, so the caller can say which one applies.
      */
     function openPreview(sessionId, path) {
-      if (rightbar === null || sessionId === undefined || sessionId === null) return 'service'
+      if (sessionId === undefined || sessionId === null) return 'service'
+      const column = rightbar ?? probeRightbar()
+      if (column === null) return 'service'
       if (!previewable(path)) return 'format'
       try {
         // `preferNewPane` splits the docked column when the two-pane rule allows it, so
         // the list stays visible beside the file instead of being replaced by it.
-        rightbar.openResource(fileAddress(sessionId, path), { preferNewPane: true })
+        column.openResource(fileAddress(sessionId, path), { preferNewPane: true })
         return 'open'
       } catch {
         return 'service'
@@ -935,14 +942,20 @@ window.__ModuleLoader__.load({
         const t = ctx.locale.bind(NS)
 
         // The right sidebar is provided by another plugin, so it is fetched at runtime
-        // and may be absent: no preview then, and every other part of the tab keeps working.
-        ctx.effect(() => {
-          rightbar = ctx.get('sidebarRight') ?? null
-          return () => {
-            cancelPendingCopy()
-            rightbar = null
-          }
-        }, 'session-artifacts: right sidebar handle')
+        // and may be absent: no preview then, and every other part of the tab keeps
+        // working. It also activates later than this tab — its fiber waits for the
+        // session model — so waiting for the service the way the tab registry is waited
+        // for is what makes the handle real, instead of a null captured at apply time.
+        probeRightbar = () => ctx.get('sidebarRight') ?? null
+        ctx.inject(['sidebarRight'], (withRight) => {
+          withRight.effect(() => {
+            rightbar = withRight.get('sidebarRight') ?? null
+            return () => {
+              cancelPendingCopy()
+              rightbar = null
+            }
+          }, 'session-artifacts: right sidebar handle')
+        })
 
         ctx.effect(() => {
           const style = document.createElement('style')

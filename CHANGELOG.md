@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1 — the preview handle is waited for, not read once
+
+- `ctx.get('sidebarRight')` was read inside an effect at apply time. The right sidebar's fiber waits on the session model, so in a profile where it activates *after* this tab the read returned `undefined` and the cached handle stayed null for the whole window: every double click answered "the sidebar is not ready yet". The handle now arrives through `ctx.inject(['sidebarRight'], …)`, the same way the tab registry is waited for, and `openPreview` falls back to a live `ctx.get` for the gap before that.
+- Reproduced against the shipped cordis 4.0.5: the apply-time read stays `null` after the provider lands, while both the injected read and the live read get the controller.
+
 ## 0.4.0 — click to copy, double-click to preview
 
 - **One click copies the path, two clicks preview it.** A double click fires two clicks, so a copy scheduled by the first click is cancelled when the second lands (`CLICK_MS = 240`). Without that delay every double click would have copied first.
