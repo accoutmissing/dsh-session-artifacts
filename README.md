@@ -85,6 +85,7 @@ DSH 的会话日志是**唯一**能回答「这个会话产出过哪些文件」
 
 ## 兼容性与已知限制
 
+- **宿主 0.2.2-rc.5 已复核**（2026-11-20）：不改代码即可运行，证据见 [CHANGELOG](CHANGELOG.md) 的 0.4.3 条目。`engines.dsh` 那两条分支原样保留，rc.5 落在第二条里；用到的 `clientModules.graph()`、槽位 `sidebar.right.pane.tab`、`sidebarRightTabs`、`openResource(address, { preferNewPane })`、`ctx.webServer`、`ctx.locale` 在 rc.3 → rc.5 之间没有变化。
 - 只在 **Windows + DSH 桌面版**上实测（Electron 自带 Node 24，提供 `zlib.zstdDecompressSync`）。日志路径在其它平台是同一个 `~/.dsh/sessions`，但没有实测过。
 - **产物只认 `write` / `edit` 工具调用里的 `file_path`**。`ops_bash` 命令里顺手生成的文件（重定向、构建产物、下载）不会进清单——那些路径藏在 shell 命令字符串里，猜比漏更糟，所以不猜。
 - 索引窗口上限 400 个会话，`node_modules` / `.git` / `dist` 等目录在反查产物时跳过。

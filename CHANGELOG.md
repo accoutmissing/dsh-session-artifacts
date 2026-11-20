@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.3 — 2026-11-20
+
+**宿主走到 0.2.2-rc.5 后的兼容复核：代码不用改，结论落库。**
+
+功能代码零改动；patch 只是把「rc.5 验过」这件事变成 tag 指得到的事实。
+
+- **槽位没变。** rc.3 与 rc.5 的槽位目录都是 133 个，交集 133，各自独有 0。标签用的 `sidebar.right.pane.tab` 仍在（`sidebar.right.pane.tab.title` 由 `dsh-client-ui-plan` 注册）。
+- **启动图契约没变。** `clientModules.graph()` 返回 `WebBootGraph { rev, entries[].{id,url,rev,inject?,immediately?} }`（`dsh-client-modules/lib/types/index.d.ts:110`、`lib/types/client/manifest.d.ts:48-99`），与 `describeClient()` 的读法一致。
+- **实测。** `/plugins/session-artifacts/state` 回 200：275 个会话、`fileTotal: 1879`、`client.graphRev: "920ca0d2c902"`；`@local/dsh-session-artifacts` 一行 `url: "plugins/??@local/dsh-session-artifacts/client.js&rev=a7022c72813b"`、`inject: ["@deepseek-ai/dsh-client-ui-slots", "@deepseek-ai/dsh-client-locale"]`。
+- **服务签名**：`sidebarRightTabs`、`openResource(address, { preferNewPane })`（`dsh-client-ui-sidebar-right/lib/types/client/service.d.ts:192` 与 `:302`，`preferNewPane` 在 `:117`）、`ctx.webServer.register`、`ctx.locale.register/bind` 在 rc.5 上形状未变。
+- **范围没动。** 两条分支 `>=0.2.0-rc.1 <0.2.1-0 || >=0.2.1-rc.1 <0.3.0-0` 原样保留——它们就是上一版为了绕开 node-semver 把预发布读成「没有预发布」而拆出来的，rc.5 落在第二条里。
+
 ## 0.4.1 — the preview handle is waited for, not read once
 
 - `ctx.get('sidebarRight')` was read inside an effect at apply time. The right sidebar's fiber waits on the session model, so in a profile where it activates *after* this tab the read returned `undefined` and the cached handle stayed null for the whole window: every double click answered "the sidebar is not ready yet". The handle now arrives through `ctx.inject(['sidebarRight'], …)`, the same way the tab registry is waited for, and `openPreview` falls back to a live `ctx.get` for the gap before that.

@@ -85,6 +85,7 @@ The cache lives in `~/.dsh/session-artifacts-cache.json` and is keyed on `size +
 
 ## Compatibility and limits
 
+- **Verified against host 0.2.2-rc.5** (2026-11-20): no code change was needed; see the 0.4.3 entry of the [CHANGELOG](CHANGELOG.md). Both `engines.dsh` branches stay as they are, and rc.5 falls in the second one; `clientModules.graph()`, the `sidebar.right.pane.tab` slot, `sidebarRightTabs`, `openResource(address, { preferNewPane })`, `ctx.webServer` and `ctx.locale` are unchanged between rc.3 and rc.5.
 - Measured on **Windows + the DSH desktop app** only (its Electron ships Node 24, which provides `zlib.zstdDecompressSync`). The log path is the same `~/.dsh/sessions` elsewhere, but that is untested.
 - **Produced files are only what `write` / `edit` named.** Files a shell command happened to create (redirection, build output, downloads) stay out of the list — those paths hide inside command strings, and guessing would be worse than missing them.
 - The index window is capped at 400 Sessions; `node_modules`, `.git`, `dist` and similar directories are skipped when resolving artifacts.
